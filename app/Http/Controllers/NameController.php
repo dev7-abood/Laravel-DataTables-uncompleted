@@ -56,12 +56,34 @@ class NameController extends Controller
     }
 
 
+    public function rules()
+    {
+        return [
+            'first_name' => 'required|max:100',
+            'last_name' => 'required|max:100',
+        ];
+    }
+
     public function update(Request $request)
     {
-         Name::whereId($request->hidden_id)->update($request->except('_token' , 'hidden_id'));
+
+        if ($request->ajax())
+        {
+            $request->validate($this->rules());
+
+            Name::whereId($request->hidden_id)->update($request->except('_token' , 'hidden_id' , '_method'));
+
+            return response()->json(['success' => 'Data is successfully updated']);
+        }
+
+    }
 
 
-        return response()->json(['success' => 'Data is successfully updated']);
+    public function destroy($id)
+    {
+        $del = Name::findOrFail($id);
+        $del->delete();
+        return response(['success' => 'the record is deleted']);
     }
 
 

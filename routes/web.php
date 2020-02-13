@@ -21,4 +21,6 @@ Route::post('/store-name', ['as' => 'name.store' , 'uses' => 'NameController@sto
 
 Route::get('/edit-name/{id}' , ['as' => 'name.edit' , 'uses' => 'NameController@edit']);
 
-Route::post('/update-name' , ['as' => 'name.update' , 'uses' => 'NameController@update']);
+Route::put('/update-name' , ['as' => 'name.update' , 'uses' => 'NameController@update']);
+
+Route::get('/del-name/{id}' , ['as' => 'name.destroy' , 'uses' => 'NameController@destroy']);

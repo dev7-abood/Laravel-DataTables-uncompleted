@@ -101,7 +101,7 @@
     $(document).on('click', '#edit', function () {
         $('#EditModal').modal('show');
         let id = $(this).attr('name');
-        $('#hidden_id').val(id)
+        $('#hidden_id').val(id);
         $.get("/edit-name/" + id, function (data) {
             $('#edit_first_name').val(data.result.first_name);
             $('#edit_last_name').val(data.result.last_name);
@@ -115,7 +115,27 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 success : function(data) {
+
+                    $("#success_message_alert").text(data.success).show();
+                    setTimeout(function () {
+                        $("#success_message_alert").hide();
+                    }, 6000)
+
                     $('#names-table').DataTable().ajax.reload();
+                }
+                ,
+                error: (xhr, status, error) => {
+                    let err = eval("(" + xhr.responseText + ")");
+                    if (err.errors) {
+                        $.each(err.errors, function (key, val) {
+                            console.log(err)
+                            $(`#edit_${key}_alert`).text(val).show();
+                            setTimeout(function () {
+                                $(`#edit_${key}_alert`).text(val).hide();
+                                $('#name_form')[0].reset();
+                            }, 8000)
+                        });
+                    }
                 }
             })
         })
@@ -123,6 +143,43 @@
 
     });
 </script>
+
+<script>
+let userId;
+
+$(document).on('click' , '#del' , function () {
+  let userId = $(this).attr('name');
+    $('#confirmModalDel').modal('show');
+
+    $('#ok_button').click(function () {
+        $.ajax({
+            url : "/del-name/" + userId,
+            beforeSend : function () {
+                $('#ok_button').text('Deleting...');
+                setTimeout(function () {
+                    $('#ok_button').text('OK');
+                },2000)
+            },
+            success:function(data) {
+                setTimeout(function () {
+                    $('#confirmModalDel').modal('hide');
+                    $('#names-table').DataTable().ajax.reload();
+                    userId = '';
+                }, 2000);
+                console.log(data);
+            }
+        })
+    })
+
+
+});
+
+
+
+
+</script>
+
+
 </body>
 </html>
 
@@ -134,14 +191,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle">Add Record</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+
             </div>
             <div class="modal-body">
                 <span id="form_result" class="form_result"></span>
                 <form id="name_form" method="post">
                     @csrf
+
                     <div id="success_message" class="alert alert-success mb-2" style="display: none"></div>
 
                     <label for="first_name" class="font-weight-bold">First name</label>
@@ -175,9 +232,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle">Edit Record</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+
             </div>
             <div class="modal-body">
                 <span id="form_result" class="form_result"></span>
@@ -185,7 +241,9 @@
 
                 <form id="edit_name_form" method="post">
                     @csrf
-                    <div id="success_message" class="alert alert-success mb-2" style="display: none"></div>
+                    @method('PUT')
+
+                    <div id="success_message_alert" class="alert alert-success mb-2" style="display: none"></div>
                     <label for="edit_first_name" class="font-weight-bold">First name</label>
                     <input id="edit_first_name" name="first_name" class="form-control" type="text"
                            placeholder="Default input">
@@ -204,8 +262,24 @@
                         <button type="submit" id="edit_submit" class="btn btn-primary">Edit Record</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
+<div id="confirmModalDel" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+            </div>
+            <div class="modal-body">
+                <h4 align="center" style="margin:0;">Are you sure you want to remove this data?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="ok_button" id="ok_button" class="btn btn-danger">OK</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
