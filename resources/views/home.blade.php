@@ -145,10 +145,9 @@
 </script>
 
 <script>
-let userId;
 
 $(document).on('click' , '#del' , function () {
-  let userId = $(this).attr('name');
+  var userId = $(this).attr('name');
     $('#confirmModalDel').modal('show');
 
     $('#ok_button').click(function () {
@@ -164,9 +163,8 @@ $(document).on('click' , '#del' , function () {
                 setTimeout(function () {
                     $('#confirmModalDel').modal('hide');
                     $('#names-table').DataTable().ajax.reload();
-                    userId = '';
+                    userId = null;
                 }, 2000);
-                console.log(data);
             }
         })
     })
