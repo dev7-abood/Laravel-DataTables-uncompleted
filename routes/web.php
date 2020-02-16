@@ -24,3 +24,20 @@ Route::get('/edit-name/{id}' , ['as' => 'name.edit' , 'uses' => 'NameController@
 Route::put('/update-name' , ['as' => 'name.update' , 'uses' => 'NameController@update']);
 
 Route::get('/del-name/{id}' , ['as' => 'name.destroy' , 'uses' => 'NameController@destroy']);
+
+
+
+Route::get('/full-text-search' , ['as' => 'fullSearch.index' , 'uses' => 'Full_text_searchController@index']);
+Route::post('/full-text-search-action' , ['as' => 'full-text-search.action' , 'uses' => 'Full_text_searchController@action']);
+
+
+Route::group(['prefix' => 'pagination'] , function (){
+    Route::get('/' , ['as' => 'pagination.index' , 'uses' => 'PaginationController@index']);
+    Route::get('/fetch_data', ['as' => 'pagination.fetch_data' , 'uses' => 'PaginationController@fetch_data']);
+});
+
+
+Route::get('/render' , function () {
+   $view = view('welcome');
+   echo $view;
+});

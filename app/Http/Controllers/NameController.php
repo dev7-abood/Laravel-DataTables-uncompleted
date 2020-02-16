@@ -79,11 +79,15 @@ class NameController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy($id , Request $request)
     {
-        $del = Name::findOrFail($id);
-        $del->delete();
-        return response(['success' => 'the record is deleted']);
+        if ($request->ajax())
+        {
+            $del = Name::findOrFail($id);
+            $del->delete();
+            return response(['success' => 'the record is deleted']);
+        }
+
     }
 
 
